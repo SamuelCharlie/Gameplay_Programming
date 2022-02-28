@@ -11,13 +11,16 @@ public class SecondPlayerController : MonoBehaviour
 
     //private Animator player_animator;
 
-    public float player_speed = 10;
+    public float player_speed = 5;
     public float rotation_speed = 10;
     private Vector3 player_velocity;
 
-    private enum FacingDirection { North, East, South, West}
-    FacingDirection facing = FacingDirection.South;
-    private Vector3 prev_player_velocity;
+    private float boost_timer;
+    private bool is_boosting;
+
+    //private enum FacingDirection { North, East, South, West}
+    //FacingDirection facing = FacingDirection.South;
+    //private Vector3 prev_player_velocity;
 
     void Awake()
     {
@@ -44,6 +47,27 @@ public class SecondPlayerController : MonoBehaviour
         {
             //player_animator.SetBool("is_moving", false);
         }
+
+        if(is_boosting)
+        {
+            boost_timer += Time.deltaTime;
+            if (boost_timer >= 3)
+            { 
+                player_speed = 5;
+                boost_timer = 0;
+                is_boosting = false;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "SpeedBoost")
+        {
+            is_boosting = true;
+            player_speed = 30;
+            Destroy(other.gameObject);
+        }
     }
 
     private void OnEnable()
@@ -61,7 +85,7 @@ public class SecondPlayerController : MonoBehaviour
         Debug.Log("Thumb-stick coordinates = " + coordinates);
     }
 
-    private void CheckForFacingDirectionChange()
+    /*private void CheckForFacingDirectionChange()
     {
         if (player_velocity == Vector3.zero)
         {
@@ -88,9 +112,9 @@ public class SecondPlayerController : MonoBehaviour
                 ChangeFacingDirection(player_velocity);
             }
         }
-    }
+    }*/
 
-    private void ChangeFacingDirection(Vector3 dir)
+    /*private void ChangeFacingDirection(Vector3 dir)
     {
         if (dir.z != 0)
         {
@@ -110,5 +134,5 @@ public class SecondPlayerController : MonoBehaviour
         {
             CheckForFacingDirectionChange();
         }
-    }
+    }*/
 }
