@@ -6,58 +6,86 @@ using UnityEngine.InputSystem;
 public class SecondPlayerController : MonoBehaviour
 {
     PlayerControls controls;
-    Vector2 move_vector;
     Vector2 rotate_vector;
+    Vector2 move_vector;
 
-    //private Animator player_animator;
+    public CharacterController controller;
 
-    public float player_speed = 5;
-    public float rotation_speed = 10;
-    private Vector3 player_velocity;
+    public float player_speed;
+    //public float rotation_speed;
+    [SerializeField]private Vector3 player_velocity;
+    private Vector3 player_movement;
 
-    private float boost_timer;
-    private bool is_boosting;
+    [SerializeField] private bool is_grounded;
+    [SerializeField] private float ground_distance_check;
+    [SerializeField] private LayerMask ground_mask;
+    [SerializeField] private float gravity;
 
-    //private enum FacingDirection { North, East, South, West}
-    //FacingDirection facing = FacingDirection.South;
-    //private Vector3 prev_player_velocity;
+    [SerializeField] private float jump_height;
+
+    [SerializeField] private float boost_timer;
+    [SerializeField] private bool is_boosting;
 
     void Awake()
     {
-        //player_animator = GetComponent<Animator>();
         controls = new PlayerControls();
 
         controls.Player.Move.performed += ctx => move_vector = ctx.ReadValue<Vector2>();
         controls.Player.Move.canceled += ctx => move_vector = Vector2.zero;
 
+        controls.Player.Rotate.performed += ctx => rotate_vector = ctx.ReadValue<Vector2>();
+        controls.Player.Rotate.canceled += ctx => rotate_vector = Vector2.zero;
+
+        controls.Player.PlayerJump.performed += ctx => Jump();
+
     }
 
     void FixedUpdate()
     {
-        Debug.Log(new Vector3(move_vector.x, 0.0f, move_vector.y));
-        Vector3 movement = new Vector3(move_vector.x, 0.0f, move_vector.y) * player_speed *
-        Time.deltaTime;
-        transform.Translate(movement, Space.World);
+        Move();
+        GetComponent<Transform>().Rotate(Vector3.up * rotate_vector.x * 5.0f);
 
-        if (move_vector.x != 0 || move_vector.y != 0)
-        {
-            //player_animator.SetBool("is_moving", true);
-        }
-        else if (move_vector.x == 0 || move_vector.y == 0)
-        {
-            //player_animator.SetBool("is_moving", false);
-        }
 
         if(is_boosting)
         {
             boost_timer += Time.deltaTime;
             if (boost_timer >= 3)
             { 
-                player_speed = 5;
+                player_speed = 20;
                 boost_timer = 0;
                 is_boosting = false;
             }
         }
+    }
+    private void Move()
+    {
+        is_grounded = Physics.CheckSphere(transform.position, ground_distance_check, ground_mask);
+
+        if (is_grounded && player_velocity.y < 0)
+        {
+            player_velocity.y = -2.0f;
+        }
+
+        if(is_grounded)
+        {
+            Debug.Log(new Vector3(move_vector.x, 0.0f, move_vector.y));
+            Vector3 movement = new Vector3(move_vector.x, 0.0f, move_vector.y) * player_speed *
+            Time.deltaTime;
+            player_movement = movement;
+            player_movement = transform.TransformDirection(movement);
+            transform.Translate(movement, Space.World);
+        }
+
+        controller.Move(player_movement * player_speed * Time.deltaTime);
+
+        player_velocity.y += gravity * Time.deltaTime;
+        controller.Move(player_velocity * Time.deltaTime);
+    }
+
+    private void Jump()
+    {
+        Debug.Log("Jump");
+        player_velocity.y = Mathf.Sqrt(jump_height * -2 * gravity);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -65,7 +93,7 @@ public class SecondPlayerController : MonoBehaviour
         if (other.tag == "SpeedBoost")
         {
             is_boosting = true;
-            player_speed = 30;
+            player_speed = 25;
             Destroy(other.gameObject);
         }
     }
@@ -84,55 +112,4 @@ public class SecondPlayerController : MonoBehaviour
     {
         Debug.Log("Thumb-stick coordinates = " + coordinates);
     }
-
-    /*private void CheckForFacingDirectionChange()
-    {
-        if (player_velocity == Vector3.zero)
-        {
-            return;
-        }
-
-        if(player_velocity.x == 0 || player_velocity.z == 0)
-        {
-            ChangeFacingDirection(player_velocity);
-        }
-        else
-        {
-            if(prev_player_velocity.x == 0)
-            {
-                ChangeFacingDirection(new Vector3(player_velocity.x, 0, 0));
-            }
-            else if (prev_player_velocity.z == 0)
-            {
-                ChangeFacingDirection(new Vector3(0, 0, prev_player_velocity.z));
-            }
-            else
-            {
-                Debug.LogWarning("Unexpected player_velocity value");
-                ChangeFacingDirection(player_velocity);
-            }
-        }
-    }*/
-
-    /*private void ChangeFacingDirection(Vector3 dir)
-    {
-        if (dir.z != 0)
-        {
-            facing = (dir.z > 0) ? FacingDirection.North : FacingDirection.South;
-        }
-        if (dir.x != 0)
-        {
-            facing = (dir.x > 0) ? FacingDirection.East : FacingDirection.West;
-        }
-
-        transform.localRotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(player_velocity), rotation_speed * Time.deltaTime);
-    }
-
-    private void LateUpdate()
-    {
-        if (prev_player_velocity != player_velocity)
-        {
-            CheckForFacingDirectionChange();
-        }
-    }*/
 }
