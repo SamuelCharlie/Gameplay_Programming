@@ -10,6 +10,7 @@ public class SecondPlayerController : MonoBehaviour
     Vector2 move_vector;
 
     public CharacterController controller;
+    private Animator player_animator;
 
     public float player_speed;
     //public float rotation_speed;
@@ -22,6 +23,7 @@ public class SecondPlayerController : MonoBehaviour
     [SerializeField] private float gravity;
 
     [SerializeField] private float jump_height;
+    private bool is_jumping;
 
     [SerializeField] private float boost_timer;
     [SerializeField] private bool is_boosting;
@@ -45,7 +47,6 @@ public class SecondPlayerController : MonoBehaviour
         Move();
         GetComponent<Transform>().Rotate(Vector3.up * rotate_vector.x * 5.0f);
 
-
         if(is_boosting)
         {
             boost_timer += Time.deltaTime;
@@ -66,7 +67,7 @@ public class SecondPlayerController : MonoBehaviour
             player_velocity.y = -2.0f;
         }
 
-        if(is_grounded)
+        if (is_grounded)
         {
             Debug.Log(new Vector3(move_vector.x, 0.0f, move_vector.y));
             Vector3 movement = new Vector3(move_vector.x, 0.0f, move_vector.y) * player_speed *
@@ -74,12 +75,28 @@ public class SecondPlayerController : MonoBehaviour
             player_movement = movement;
             player_movement = transform.TransformDirection(movement);
             transform.Translate(movement, Space.World);
+
+            //player_animator.SetBool("is_jumping", false);
+            //is_jumping = false;
+            //player_animator.SetBool("is_falling", false);
         }
+        //else if (!is_grounded)
+        //{
+            //player_animator.SetBool("is_jumping", true);
+            //is_jumping = true;
+            //player_animator.SetBool("is_grounded", false);
+            //is_grounded = false;
+        //}
 
         controller.Move(player_movement * player_speed * Time.deltaTime);
 
         player_velocity.y += gravity * Time.deltaTime;
         controller.Move(player_velocity * Time.deltaTime);
+
+        //if ((is_jumping && player_velocity.y < 0) || player_velocity.y < -2)
+        //{
+            //player_animator.SetBool("is_falling", true);
+        //}
     }
 
     private void Jump()
@@ -93,7 +110,7 @@ public class SecondPlayerController : MonoBehaviour
         if (other.tag == "SpeedBoost")
         {
             is_boosting = true;
-            player_speed = 25;
+            player_speed = 30;
             Destroy(other.gameObject);
         }
     }
