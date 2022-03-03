@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,10 +11,10 @@ public class SecondPlayerController : MonoBehaviour
     Vector2 move_vector;
 
     public CharacterController controller;
+    private Rigidbody rb;
     private Animator player_animator;
 
     public float player_speed;
-    //public float rotation_speed;
     [SerializeField]private Vector3 player_velocity;
     private Vector3 player_movement;
 
@@ -31,6 +32,7 @@ public class SecondPlayerController : MonoBehaviour
     void Awake()
     {
         controls = new PlayerControls();
+        player_animator = this.GetComponent<Animator>();
 
         controls.Player.Move.performed += ctx => move_vector = ctx.ReadValue<Vector2>();
         controls.Player.Move.canceled += ctx => move_vector = Vector2.zero;
@@ -38,8 +40,20 @@ public class SecondPlayerController : MonoBehaviour
         controls.Player.Rotate.performed += ctx => rotate_vector = ctx.ReadValue<Vector2>();
         controls.Player.Rotate.canceled += ctx => rotate_vector = Vector2.zero;
 
-        controls.Player.PlayerJump.performed += ctx => Jump();
+        //controls.Player.PlayerJump.performed += ctx => Jump();
 
+    }
+
+    private void OnEnable()
+    {
+        controls.Player.Enable();
+        controls.Player.PlayerJump.started += DoJump;
+    }
+
+    private void OnDisable()
+    {
+        controls.Player.Disable();
+        controls.Player.PlayerJump.started -= DoJump;
     }
 
     void FixedUpdate()
@@ -69,40 +83,42 @@ public class SecondPlayerController : MonoBehaviour
 
         if (is_grounded)
         {
-            Debug.Log(new Vector3(move_vector.x, 0.0f, move_vector.y));
+            //Debug.Log(new Vector3(move_vector.x, 0.0f, move_vector.y));
             Vector3 movement = new Vector3(move_vector.x, 0.0f, move_vector.y) * player_speed *
             Time.deltaTime;
             player_movement = movement;
             player_movement = transform.TransformDirection(movement);
             transform.Translate(movement, Space.World);
 
-            //player_animator.SetBool("is_jumping", false);
+            if(is_jumping && movement.z == 0)
+            {
+                player_animator.SetTrigger("IsGrounded");
+            }
+            //player_animator.SetBool("isJumping", false);
             //is_jumping = false;
             //player_animator.SetBool("is_falling", false);
         }
-        //else if (!is_grounded)
-        //{
-            //player_animator.SetBool("is_jumping", true);
-            //is_jumping = true;
-            //player_animator.SetBool("is_grounded", false);
-            //is_grounded = false;
-        //}
+
+        /*if (!is_grounded)
+        {
+            Debug.Log(player_velocity.y);
+            if (is_jumping && player_velocity.y < 0)
+            {
+                player_animator.SetBool("IsFalling", true);
+            }
+        }*/
 
         controller.Move(player_movement * player_speed * Time.deltaTime);
 
         player_velocity.y += gravity * Time.deltaTime;
         controller.Move(player_velocity * Time.deltaTime);
-
-        //if ((is_jumping && player_velocity.y < 0) || player_velocity.y < -2)
-        //{
-            //player_animator.SetBool("is_falling", true);
-        //}
     }
 
     private void Jump()
     {
         Debug.Log("Jump");
         player_velocity.y = Mathf.Sqrt(jump_height * -2 * gravity);
+        is_jumping = true;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -115,18 +131,17 @@ public class SecondPlayerController : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-       controls.Player.Enable();
-    }
-
-    private void OnDisable()
-    {
-       controls.Player.Disable();
-    }
-
     void SendMessage(Vector2 coordinates)
     {
         Debug.Log("Thumb-stick coordinates = " + coordinates);
+    }
+
+    private void DoJump(InputAction.CallbackContext obj)
+    {
+        is_jumping = true;
+
+        player_animator.SetTrigger("IsJumping");
+        player_velocity.y = Mathf.Sqrt(jump_height * -2 * gravity);
+        player_animator.SetTrigger("IsFalling");
     }
 }
