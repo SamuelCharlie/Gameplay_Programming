@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SecondPlayerController : MonoBehaviour
+public class SecondPlayerController : CharacterManager
 {
     PlayerControls controls;
     Vector2 rotate_vector;
     Vector2 move_vector;
+
+    public Transform target_transform;
+    public Transform camera_transform;
 
     public CharacterController controller;
     public static Rigidbody rb;
@@ -33,6 +36,16 @@ public class SecondPlayerController : MonoBehaviour
     public static bool in_trigger;
     [SerializeField] private float interaction_timer;
 
+    public bool is_locking_on;
+    public bool lock_on_input;
+    public bool lock_on_flag;
+
+    public Transform current_lock_on_target;
+
+    List<CharacterManager> available_targets = new List<CharacterManager>();
+    public Transform nearest_lock_on_target;
+    public float maximum_lock_on_distance = 30;
+
     void Awake()
     {
         controls = new PlayerControls();
@@ -52,6 +65,7 @@ public class SecondPlayerController : MonoBehaviour
         controls.Player.PlayerJump.started += DoJump;
         controls.Player.PlayerAttack.started += DoAttack;
         controls.Player.PlayerInteract.started += DoInteract;
+        controls.Player.LockOn.started += DoLockOn;
     }
 
     private void OnDisable()
@@ -60,6 +74,7 @@ public class SecondPlayerController : MonoBehaviour
         controls.Player.PlayerJump.started -= DoJump;
         controls.Player.PlayerAttack.started -= DoAttack;
         controls.Player.PlayerInteract.started -= DoInteract;
+        controls.Player.LockOn.started -= DoLockOn;
     }
 
     void FixedUpdate()
@@ -67,7 +82,30 @@ public class SecondPlayerController : MonoBehaviour
         if (!PauseMenu.is_paused)
         {
             Move();
-            GetComponent<Transform>().Rotate(Vector3.up * rotate_vector.x * 5.0f);
+
+            if (!is_locking_on)
+            {
+                GetComponent<Transform>().Rotate(Vector3.up * rotate_vector.x * 5.0f);
+            }
+            else if (is_locking_on)
+            {
+                Vector3 dir = current_lock_on_target.position - transform.position;
+
+                dir.Normalize();
+                dir.y = 0;
+
+                Quaternion target_rotation = Quaternion.LookRotation(dir);
+                transform.rotation = target_rotation;
+
+                dir = current_lock_on_target.position - camera_transform.position;
+                dir.Normalize();
+
+                target_rotation = Quaternion.LookRotation(dir);
+                Vector3 euler_angle = target_rotation.eulerAngles;
+                euler_angle.y = 0;
+                camera_transform.localEulerAngles = euler_angle;
+            }
+
 
             if (is_boosting)
             {
@@ -160,5 +198,81 @@ public class SecondPlayerController : MonoBehaviour
 
             is_interacting = true;
         }
+    }
+
+    public void HandleLockOn()
+    {
+        float shortest_distance = Mathf.Infinity;
+
+        Collider[] colliders = Physics.OverlapSphere(target_transform.position, 26);
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            CharacterManager character = colliders[i].GetComponent<CharacterManager>();
+
+            if (character != null)
+            {
+                Vector3 lock_target_direction = character.transform.position - target_transform.position;
+                float distance_from_target = Vector3.Distance(target_transform.position, character.transform.position);
+                float viewable_angle = Vector3.Angle(lock_target_direction, camera_transform.forward);
+
+                if (character.transform.root != target_transform.transform.root 
+                    && viewable_angle > -50 && viewable_angle < 50 
+                    && distance_from_target <= maximum_lock_on_distance)
+                {
+                    available_targets.Add(character);
+                }
+            }
+        }
+
+        for (int k = 0; k < available_targets.Count; k++)
+        {
+            float distance_from_target = Vector3.Distance(target_transform.position, available_targets[k].transform.position);
+
+            if (distance_from_target < shortest_distance)
+            {
+                shortest_distance = distance_from_target;
+                nearest_lock_on_target = available_targets[k].lock_on_transform;
+            }
+        }
+    }
+
+    private void DoLockOn(InputAction.CallbackContext obj)
+    {
+
+        if (is_locking_on)
+        {
+            is_locking_on = false;
+        }
+        else if (!is_locking_on)
+        {
+            is_locking_on = true;
+        }
+
+        /*if (lock_on_input && lock_on_flag == false)
+        {
+            ClearLockOnTargets();
+            lock_on_input = false;
+            HandleLockOn();
+
+            if (nearest_lock_on_target != null)
+            {
+                current_lock_on_target = nearest_lock_on_target;
+                lock_on_flag = true;
+            }
+        }
+        else if (lock_on_input && lock_on_flag)
+        {
+            lock_on_input = false;
+            lock_on_flag = false;
+            ClearLockOnTargets();
+        }*/
+    }
+
+    public void ClearLockOnTargets()
+    {
+        available_targets.Clear();
+        nearest_lock_on_target = null;
+        current_lock_on_target = null; 
     }
 }

@@ -81,6 +81,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""LockOn"",
+                    ""type"": ""Button"",
+                    ""id"": ""e6271e94-1eca-4fd4-81f9-6ab7a3831f16"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -259,6 +267,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""POVSwitch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ebb9431-d618-4d43-9d37-59df47c4a553"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""LockOn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -298,6 +317,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
         m_Player_PlayerInventory = m_Player.FindAction("PlayerInventory", throwIfNotFound: true);
         m_Player_POVSwitch = m_Player.FindAction("POVSwitch", throwIfNotFound: true);
+        m_Player_LockOn = m_Player.FindAction("LockOn", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -355,6 +375,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_PauseMenu;
     private readonly InputAction m_Player_PlayerInventory;
     private readonly InputAction m_Player_POVSwitch;
+    private readonly InputAction m_Player_LockOn;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -367,6 +388,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
         public InputAction @PlayerInventory => m_Wrapper.m_Player_PlayerInventory;
         public InputAction @POVSwitch => m_Wrapper.m_Player_POVSwitch;
+        public InputAction @LockOn => m_Wrapper.m_Player_LockOn;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -400,6 +422,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @POVSwitch.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPOVSwitch;
                 @POVSwitch.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPOVSwitch;
                 @POVSwitch.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPOVSwitch;
+                @LockOn.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLockOn;
+                @LockOn.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLockOn;
+                @LockOn.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLockOn;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -428,6 +453,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @POVSwitch.started += instance.OnPOVSwitch;
                 @POVSwitch.performed += instance.OnPOVSwitch;
                 @POVSwitch.canceled += instance.OnPOVSwitch;
+                @LockOn.started += instance.OnLockOn;
+                @LockOn.performed += instance.OnLockOn;
+                @LockOn.canceled += instance.OnLockOn;
             }
         }
     }
@@ -460,5 +488,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnPauseMenu(InputAction.CallbackContext context);
         void OnPlayerInventory(InputAction.CallbackContext context);
         void OnPOVSwitch(InputAction.CallbackContext context);
+        void OnLockOn(InputAction.CallbackContext context);
     }
 }

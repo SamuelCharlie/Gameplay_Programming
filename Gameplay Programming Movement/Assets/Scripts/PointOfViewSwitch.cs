@@ -26,11 +26,6 @@ public class PointOfViewSwitch : MonoBehaviour
         camera_controls.Player.POVSwitch.started += SwitchPlayerCam;
     }
 
-    void Update()
-    {
-        
-    }
-
     private void SwitchPlayerCam(InputAction.CallbackContext obj)
     {
         switch(active_cam)
