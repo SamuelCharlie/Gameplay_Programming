@@ -20,33 +20,9 @@ public class CharacterAnim : MonoBehaviour
 
     void Update()
     {
-        player_animator.SetFloat("speed", rb.velocity.magnitude / max_speed);
-
-        /*if (rb.velocity.y == 0)
+        if (!PauseMenu.is_paused)
         {
-            player_animator.SetBool("is_grounded", true);
-            is_grounded = true;
-            player_animator.SetBool("is_jumping", false);
-            is_jumping = false;
-            player_animator.SetBool("is_falling", false);
+            player_animator.SetFloat("speed", rb.velocity.magnitude / max_speed);
         }
-
-        if (is_grounded)
-        {
-            Debug.Log("char anim: " + is_grounded);
-        }
-
-        if (rb.velocity.y > 0.1 && !is_grounded)
-        {
-            player_animator.SetBool("is_jumping", true);
-            is_jumping = true;
-            player_animator.SetBool("is_grounded", false);
-            is_grounded = false;
-        }
-
-        if ((is_jumping && rb.velocity.y < 0 && !is_grounded) || (rb.velocity.y < -3f && !is_grounded))
-        {
-            player_animator.SetBool("is_falling", true);
-        }*/
     }
 }

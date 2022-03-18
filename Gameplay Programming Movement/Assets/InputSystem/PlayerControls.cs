@@ -41,6 +41,46 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""PlayerAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""4f995bee-004a-4a90-840c-1b3d83ba1d0b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""PlayerInteract"",
+                    ""type"": ""Button"",
+                    ""id"": ""1ba39dbf-9d84-4ef2-8bab-10b4efc58051"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""PauseMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""04d7b67b-be22-4a49-8640-3ec466360624"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""PlayerInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""bf37e42a-9605-4368-988e-0832d69f53bd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""POVSwitch"",
+                    ""type"": ""Button"",
+                    ""id"": ""973a76be-d95a-442b-a20a-02d9ed0eaeff"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -142,6 +182,83 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""243b5f73-4cb4-4b03-b2cf-90e794d3fe32"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""PlayerAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f0147d55-a93b-4979-a7e7-6f493eb098e4"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""PlayerAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""25e937e7-b764-4a22-8aa7-0b1646ac6d66"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""PlayerInteract"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a95489e6-abe3-4ffe-a5b1-b0b9040223ae"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""PauseMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6c0253a8-af43-4981-b476-7fa50191d69d"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PlayerInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b267fd36-5255-4863-886f-9093910c5e06"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""POVSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e983f05b-56f1-493e-99d2-fce9299039b6"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""POVSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -176,6 +293,11 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_PlayerJump = m_Player.FindAction("PlayerJump", throwIfNotFound: true);
         m_Player_Rotate = m_Player.FindAction("Rotate", throwIfNotFound: true);
+        m_Player_PlayerAttack = m_Player.FindAction("PlayerAttack", throwIfNotFound: true);
+        m_Player_PlayerInteract = m_Player.FindAction("PlayerInteract", throwIfNotFound: true);
+        m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
+        m_Player_PlayerInventory = m_Player.FindAction("PlayerInventory", throwIfNotFound: true);
+        m_Player_POVSwitch = m_Player.FindAction("POVSwitch", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -228,6 +350,11 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_PlayerJump;
     private readonly InputAction m_Player_Rotate;
+    private readonly InputAction m_Player_PlayerAttack;
+    private readonly InputAction m_Player_PlayerInteract;
+    private readonly InputAction m_Player_PauseMenu;
+    private readonly InputAction m_Player_PlayerInventory;
+    private readonly InputAction m_Player_POVSwitch;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -235,6 +362,11 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @PlayerJump => m_Wrapper.m_Player_PlayerJump;
         public InputAction @Rotate => m_Wrapper.m_Player_Rotate;
+        public InputAction @PlayerAttack => m_Wrapper.m_Player_PlayerAttack;
+        public InputAction @PlayerInteract => m_Wrapper.m_Player_PlayerInteract;
+        public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
+        public InputAction @PlayerInventory => m_Wrapper.m_Player_PlayerInventory;
+        public InputAction @POVSwitch => m_Wrapper.m_Player_POVSwitch;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -253,6 +385,21 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Rotate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
                 @Rotate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
                 @Rotate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotate;
+                @PlayerAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerAttack;
+                @PlayerAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerAttack;
+                @PlayerAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerAttack;
+                @PlayerInteract.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerInteract;
+                @PlayerInteract.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerInteract;
+                @PlayerInteract.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerInteract;
+                @PauseMenu.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseMenu;
+                @PauseMenu.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseMenu;
+                @PauseMenu.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseMenu;
+                @PlayerInventory.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerInventory;
+                @PlayerInventory.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerInventory;
+                @PlayerInventory.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPlayerInventory;
+                @POVSwitch.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPOVSwitch;
+                @POVSwitch.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPOVSwitch;
+                @POVSwitch.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPOVSwitch;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -266,6 +413,21 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Rotate.started += instance.OnRotate;
                 @Rotate.performed += instance.OnRotate;
                 @Rotate.canceled += instance.OnRotate;
+                @PlayerAttack.started += instance.OnPlayerAttack;
+                @PlayerAttack.performed += instance.OnPlayerAttack;
+                @PlayerAttack.canceled += instance.OnPlayerAttack;
+                @PlayerInteract.started += instance.OnPlayerInteract;
+                @PlayerInteract.performed += instance.OnPlayerInteract;
+                @PlayerInteract.canceled += instance.OnPlayerInteract;
+                @PauseMenu.started += instance.OnPauseMenu;
+                @PauseMenu.performed += instance.OnPauseMenu;
+                @PauseMenu.canceled += instance.OnPauseMenu;
+                @PlayerInventory.started += instance.OnPlayerInventory;
+                @PlayerInventory.performed += instance.OnPlayerInventory;
+                @PlayerInventory.canceled += instance.OnPlayerInventory;
+                @POVSwitch.started += instance.OnPOVSwitch;
+                @POVSwitch.performed += instance.OnPOVSwitch;
+                @POVSwitch.canceled += instance.OnPOVSwitch;
             }
         }
     }
@@ -293,5 +455,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnPlayerJump(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnPlayerAttack(InputAction.CallbackContext context);
+        void OnPlayerInteract(InputAction.CallbackContext context);
+        void OnPauseMenu(InputAction.CallbackContext context);
+        void OnPlayerInventory(InputAction.CallbackContext context);
+        void OnPOVSwitch(InputAction.CallbackContext context);
     }
 }

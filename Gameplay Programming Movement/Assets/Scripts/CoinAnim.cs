@@ -6,9 +6,11 @@ public class CoinAnim : MonoBehaviour
 {
     public float rotate_speed = 0.0f;
 
-    // Update is called once per frame
     void Update()
     {
-        transform.Rotate(rotate_speed, 0, 0);
+        if (!PauseMenu.is_paused)
+        {
+            transform.Rotate(rotate_speed, 0, 0);
+        }
     }
 }
