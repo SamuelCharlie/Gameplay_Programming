@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using PathCreation;
 
 public class SecondPlayerController : CharacterManager
 {
@@ -14,12 +15,12 @@ public class SecondPlayerController : CharacterManager
     public Transform camera_transform;
 
     public CharacterController controller;
-    public static Rigidbody rb;
+    public Rigidbody rb;
     private Animator player_animator;
 
     public float player_speed;
     [SerializeField]private Vector3 player_velocity;
-    private Vector3 player_movement;
+    private static Vector3 player_movement;
 
     [SerializeField] private bool is_grounded;
     [SerializeField] private float ground_distance_check;
@@ -46,6 +47,11 @@ public class SecondPlayerController : CharacterManager
     public Transform nearest_lock_on_target;
     public float maximum_lock_on_distance = 30;
 
+    public PathCreator path_creator;
+    public EndOfPathInstruction end_instruction;
+    public float spline_speed;
+    public float distance_travelled;
+
     void Awake()
     {
         controls = new PlayerControls();
@@ -57,6 +63,12 @@ public class SecondPlayerController : CharacterManager
 
         controls.Player.Rotate.performed += ctx => rotate_vector = ctx.ReadValue<Vector2>();
         controls.Player.Rotate.canceled += ctx => rotate_vector = Vector2.zero;
+
+        if (path_creator != null)
+        {
+            // Subscribed to the pathUpdated event so that we're notified if the path changes during the game
+            path_creator.pathUpdated += OnPathChanged;
+        }
     }
 
     private void OnEnable()
@@ -106,7 +118,6 @@ public class SecondPlayerController : CharacterManager
                 camera_transform.localEulerAngles = euler_angle;
             }
 
-
             if (is_boosting)
             {
                 boost_timer += Time.deltaTime;
@@ -119,6 +130,14 @@ public class SecondPlayerController : CharacterManager
             }
 
             interaction_timer += Time.deltaTime;
+
+            if (path_creator != null)
+            {
+                distance_travelled += player_movement.y * player_speed * Time.deltaTime;
+                transform.position = path_creator.path.GetPointAtDistance(distance_travelled, EndOfPathInstruction.Stop);
+                //transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, EndOfPathInstruction.Stop);
+                //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+            }
         }
     }
     private void Move()
@@ -169,6 +188,13 @@ public class SecondPlayerController : CharacterManager
             player_speed = 30;
             Destroy(other.gameObject);
         }
+
+        /*if (path_creator != null)
+        {
+            distance_travelled += (player_movement.y * spline_speed / 15) * Time.deltaTime;
+            transform.position = path_creator.path.GetPointAtDistance(distance_travelled, EndOfPathInstruction.Stop);
+            //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+        }*/
     }
 
     void SendMessage(Vector2 coordinates)
@@ -274,5 +300,10 @@ public class SecondPlayerController : CharacterManager
         available_targets.Clear();
         nearest_lock_on_target = null;
         current_lock_on_target = null; 
+    }
+
+    void OnPathChanged()
+    {
+        distance_travelled = path_creator.path.GetClosestDistanceAlongPath(transform.position);
     }
 }
