@@ -6,6 +6,7 @@ TagManager:
   tags:
   - SpeedBoost
   - Coin
+  - Platform
   layers:
   - Default
   - TransparentFX

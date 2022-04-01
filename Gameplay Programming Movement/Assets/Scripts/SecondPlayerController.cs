@@ -10,6 +10,7 @@ public class SecondPlayerController : CharacterManager
     PlayerControls controls;
     Vector2 rotate_vector;
     Vector2 move_vector;
+    public GameObject player;
 
     public Transform target_transform;
     public Transform camera_transform;
@@ -22,7 +23,7 @@ public class SecondPlayerController : CharacterManager
     [SerializeField]private Vector3 player_velocity;
     private static Vector3 player_movement;
 
-    [SerializeField] private bool is_grounded;
+    [SerializeField] private static bool is_grounded;
     [SerializeField] private float ground_distance_check;
     [SerializeField] private LayerMask ground_mask;
     [SerializeField] private float gravity;
@@ -51,6 +52,10 @@ public class SecondPlayerController : CharacterManager
     public EndOfPathInstruction end_instruction;
     public float spline_speed;
     public float distance_travelled;
+
+    public bool on_platform;
+    public Transform player_transform;
+    public Transform platform;
 
     void Awake()
     {
@@ -131,12 +136,13 @@ public class SecondPlayerController : CharacterManager
 
             interaction_timer += Time.deltaTime;
 
-            if (path_creator != null)
+            if (on_platform)
             {
-                distance_travelled += player_movement.y * player_speed * Time.deltaTime;
-                transform.position = path_creator.path.GetPointAtDistance(distance_travelled, EndOfPathInstruction.Stop);
-                //transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, EndOfPathInstruction.Stop);
-                //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+                //rb.isKinematic = true;
+            }
+            else
+            {
+                //rb.isKinematic = false;
             }
         }
     }
@@ -189,12 +195,22 @@ public class SecondPlayerController : CharacterManager
             Destroy(other.gameObject);
         }
 
-        /*if (path_creator != null)
+        if (other.tag == "Platform")
         {
-            distance_travelled += (player_movement.y * spline_speed / 15) * Time.deltaTime;
-            transform.position = path_creator.path.GetPointAtDistance(distance_travelled, EndOfPathInstruction.Stop);
-            //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
-        }*/
+            on_platform = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Platform")
+        {
+            on_platform = false;
+            if (other.gameObject == player)
+            {
+                player.transform.parent = null;
+            }
+        }
     }
 
     void SendMessage(Vector2 coordinates)
