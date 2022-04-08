@@ -57,6 +57,8 @@ public class SecondPlayerController : CharacterManager
     public Transform player_transform;
     public Transform platform;
 
+    public static bool is_attacking;
+
     void Awake()
     {
         controls = new PlayerControls();
@@ -229,6 +231,7 @@ public class SecondPlayerController : CharacterManager
 
     private void DoAttack(InputAction.CallbackContext obj)
     {
+        is_attacking = true;
         player_animator.SetTrigger("IsAttacking");
     }
 
